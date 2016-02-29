@@ -77,12 +77,12 @@ public class Observation implements FileAccessible, HDFSAccessible{
 	}
 
 	@Override
-	public void save(Path filename) {
-
+	public void save(Path filePath) {
+		observation.save(filePath);
 	}
 
 	@Override
-	public void load(Path filename) {
-
+	public void load(Path filePath) {
+		observation.load(filePath);
 	}
 }

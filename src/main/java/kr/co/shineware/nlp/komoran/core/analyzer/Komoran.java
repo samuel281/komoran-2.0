@@ -135,6 +135,9 @@ public class Komoran {
 	private void load(Path path) {
 		this.table.load(new Path(path, FILENAME.POS_TABLE));
 		this.observation.load(new Path(path, FILENAME.OBSERVATION));
+		this.transition.load(new Path(path, FILENAME.TRANSITION));
+
+
 	}
 
 	/**

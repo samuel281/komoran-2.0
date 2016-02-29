@@ -82,10 +82,10 @@ public class PosTable implements FileAccessible, HDFSAccessible{
 	}
 
 	@Override
-	public void save(Path filename) {
+	public void save(Path filePath) {
 		try {
 			FileSystem fs = FileSystem.get(new Configuration());
-			OutputStream os = fs.create(filename, true);
+			OutputStream os = fs.create(filePath, true);
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
 			save(bw);
 		} catch (IOException e) {
@@ -118,11 +118,11 @@ public class PosTable implements FileAccessible, HDFSAccessible{
 
 
 	@Override
-	public void load(Path path) {
+	public void load(Path filePath) {
 		try {
 			this.init();
 			FileSystem fs = FileSystem.get(new Configuration());
-			FSDataInputStream is = fs.open(path);
+			FSDataInputStream is = fs.open(filePath);
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			load(br);
 		} catch (IOException ex) {

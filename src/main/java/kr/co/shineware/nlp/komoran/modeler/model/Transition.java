@@ -17,18 +17,17 @@
  */
 package kr.co.shineware.nlp.komoran.modeler.model;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import kr.co.shineware.nlp.komoran.interfaces.FileAccessible;
+import kr.co.shineware.nlp.komoran.interfaces.HDFSAccessible;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 
-public class Transition implements FileAccessible{
+public class Transition implements FileAccessible, HDFSAccessible{
 	
 	private double[][] scoreMatrix;
 
@@ -58,25 +57,57 @@ public class Transition implements FileAccessible{
 
 	@Override
 	public void save(String filename) {
-		ObjectOutputStream dos;
 		try {
-			dos = new ObjectOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(filename))));
-			dos.writeObject(scoreMatrix);
-			dos.close();
+			save(new ObjectOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(filename)))));
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
+		}
 	}
+
+	@Override
+	public void save(Path filePath) {
+		try {
+			FileSystem fs = FileSystem.get(new Configuration());
+			save(new ObjectOutputStream(new BufferedOutputStream(new GZIPOutputStream(fs.create(filePath, true)))));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void save(ObjectOutputStream oos) {
+		try {
+			oos.writeObject(scoreMatrix);
+			oos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void load(String filename) {
-		ObjectInputStream dis;
 		try {
-			dis = new ObjectInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(filename))));
-			scoreMatrix = (double[][]) dis.readObject();
-			dis.close();
+			load(new ObjectInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(filename)))));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}			
 	}
 
+	@Override
+	public void load(Path filePath) {
+		try {
+			FileSystem fs = FileSystem.get(new Configuration());
+			load(new ObjectInputStream(new BufferedInputStream(new GZIPInputStream(fs.open(filePath)))));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void load(ObjectInputStream ois) {
+		try {
+			scoreMatrix = (double[][]) ois.readObject();
+			ois.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

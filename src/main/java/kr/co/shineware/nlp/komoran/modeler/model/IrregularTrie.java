@@ -22,8 +22,10 @@ import java.util.List;
 
 import kr.co.shineware.ds.trie.TrieDictionary;
 import kr.co.shineware.nlp.komoran.interfaces.FileAccessible;
+import kr.co.shineware.nlp.komoran.interfaces.HDFSAccessible;
+import org.apache.hadoop.fs.Path;
 
-public class IrregularTrie implements FileAccessible{
+public class IrregularTrie implements FileAccessible, HDFSAccessible {
 	private TrieDictionary<List<IrregularNode>> dic;
 	
 	public IrregularTrie(){
@@ -67,5 +69,15 @@ public class IrregularTrie implements FileAccessible{
 	@Override
 	public void load(String filename) {
 		this.dic.load(filename);		
+	}
+
+	@Override
+	public void save(Path filePath) {
+		this.dic.save(filePath);
+	}
+
+	@Override
+	public void load(Path filePath) {
+		this.dic.load(filePath);
 	}
 }

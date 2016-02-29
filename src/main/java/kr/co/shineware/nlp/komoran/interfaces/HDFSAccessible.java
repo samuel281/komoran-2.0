@@ -10,12 +10,12 @@ import java.io.IOException;
 public interface HDFSAccessible {
     /**
      * 현재 사용되고 있는 데이터를 filename에 저장
-     * @param filename
+     * @param filePath
      */
-    public void save(Path filename);
+    public void save(Path filePath);
     /**
      * 저장된 filename으로부터 데이터 로드
-     * @param filename
+     * @param filePath
      */
-    public void load(Path filename);
+    public void load(Path filePath);
 }
