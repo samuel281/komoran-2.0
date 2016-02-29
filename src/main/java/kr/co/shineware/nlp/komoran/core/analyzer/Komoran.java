@@ -45,6 +45,7 @@ import kr.co.shineware.nlp.komoran.modeler.model.Transition;
 import kr.co.shineware.nlp.komoran.parser.KoreanUnitParser;
 import kr.co.shineware.util.common.model.Pair;
 import kr.co.shineware.util.common.string.StringUtil;
+import org.apache.hadoop.fs.Path;
 
 /**
  * 형태소 분석 core에 해당<br>
@@ -88,6 +89,20 @@ public class Komoran {
 	}
 
 	/**
+	 * 코모란의 생성자로써 객체 생성 시 불규칙,관측,전이 확률 모델 및 품사 테이블이 포함된 경로를 지정해주어야 함<br>
+	 * 각 모델 및 테이블의 파일명은 아래와 같은 <br>
+	 * - 불규칙 모델 : irregular.model <br>
+	 * - 관측 확률 모델 : observation.model <br>
+	 * - 전이 확률 모델 : transition.model <br>
+	 * - 품사 테이블 : pos.tabel <br>
+	 * @param path 형태소 분석에 필요한 데이터 파일들의 HDFS 경로
+	 */
+	public Komoran(Path path) {
+		this.init();
+		this.load(path);
+	}
+
+	/**
 	 * 각종 리소스 초기화
 	 */
 	private void init(){
@@ -115,7 +130,13 @@ public class Komoran {
 		this.transition.load(path+File.separator+FILENAME.TRANSITION);
 		this.irrTrie.load(path+File.separator+FILENAME.IRREGULAR_MODEL);
 	}
-	
+
+
+	private void load(Path path) {
+		this.table.load(new Path(path, FILENAME.POS_TABLE));
+		this.observation.load(new Path(path, FILENAME.OBSERVATION));
+	}
+
 	/**
 	 * 입력된 텍스트 src를 공백 단위로 잘라 형태소 분석(기존 형태소 분석기와 동일 방법)
 	 * @param src

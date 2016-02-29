@@ -22,11 +22,13 @@ import java.util.List;
 
 import kr.co.shineware.ds.trie.TrieDictionary;
 import kr.co.shineware.nlp.komoran.interfaces.FileAccessible;
+import kr.co.shineware.nlp.komoran.interfaces.HDFSAccessible;
 import kr.co.shineware.nlp.komoran.interfaces.UnitParser;
 import kr.co.shineware.nlp.komoran.parser.KoreanUnitParser;
 import kr.co.shineware.util.common.model.Pair;
+import org.apache.hadoop.fs.Path;
 
-public class Observation implements FileAccessible{
+public class Observation implements FileAccessible, HDFSAccessible{
 
 	private TrieDictionary<List<Pair<Integer,Double>>> observation;
 	private UnitParser parser;
@@ -72,5 +74,15 @@ public class Observation implements FileAccessible{
 	@Override
 	public void load(String filename) {
 		observation.load(filename);	
+	}
+
+	@Override
+	public void save(Path filename) {
+
+	}
+
+	@Override
+	public void load(Path filename) {
+
 	}
 }

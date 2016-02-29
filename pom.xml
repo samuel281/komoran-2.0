@@ -6,8 +6,12 @@
 
     <groupId>kr.co.shineware</groupId>
     <artifactId>komoran</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.5-SNAPSHOT</version>
     <packaging>jar</packaging>
+
+    <properties>
+        <hadoop.version>2.6.0-cdh5.4.8</hadoop.version>
+    </properties>
 
     <build>
         <plugins>
@@ -22,6 +26,12 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>CDH</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>kr.co.shineware</groupId>
@@ -32,6 +42,12 @@
             <groupId>kr.co.shineware</groupId>
             <artifactId>ds</artifactId>
             <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>${hadoop.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

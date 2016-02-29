@@ -17,19 +17,20 @@
  */
 package kr.co.shineware.nlp.komoran.modeler.model;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import kr.co.shineware.nlp.komoran.interfaces.FileAccessible;
+import kr.co.shineware.nlp.komoran.interfaces.HDFSAccessible;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 
-public class PosTable implements FileAccessible{
+public class PosTable implements FileAccessible, HDFSAccessible{
 	
 	//key = pos
 	//value = id
@@ -74,35 +75,69 @@ public class PosTable implements FileAccessible{
 	public void save(String filename) {
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
-			Set<Entry<String,Integer>> posIdEntrySet = posIdTable.entrySet();
-			for (Entry<String, Integer> entry : posIdEntrySet) {
-				bw.write(entry.getKey()+"\t"+entry.getValue());
-				bw.newLine();
-			}
-			bw.close();
-			bw = null;
-			posIdEntrySet = null;
+			save(bw);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
 	}
 
 	@Override
+	public void save(Path filename) {
+		try {
+			FileSystem fs = FileSystem.get(new Configuration());
+			OutputStream os = fs.create(filename, true);
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+			save(bw);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void save(BufferedWriter bw) throws IOException {
+		Set<Entry<String,Integer>> posIdEntrySet = posIdTable.entrySet();
+		for (Entry<String, Integer> entry : posIdEntrySet) {
+			bw.write(entry.getKey()+"\t"+entry.getValue());
+			bw.newLine();
+		}
+		bw.close();
+		bw = null;
+		posIdEntrySet = null;
+	}
+
+
+	@Override
 	public void load(String filename) {
 		try{
 			this.init();
 			BufferedReader br = new BufferedReader(new FileReader(filename));
-			String line = null;
-			while((line = br.readLine()) != null){
-				String[] tokens = line.split("\t");
-				this.posIdTable.put(tokens[0], Integer.parseInt(tokens[1]));
-				this.idPosTable.put(Integer.parseInt(tokens[1]),tokens[0]);
-			}
-			br.close();
-			br = null;
+			load(br);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+
+
+	@Override
+	public void load(Path path) {
+		try {
+			this.init();
+			FileSystem fs = FileSystem.get(new Configuration());
+			FSDataInputStream is = fs.open(path);
+			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			load(br);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void load(BufferedReader br) throws IOException {
+		String line = null;
+		while((line = br.readLine()) != null){
+			String[] tokens = line.split("\t");
+			this.posIdTable.put(tokens[0], Integer.parseInt(tokens[1]));
+			this.idPosTable.put(Integer.parseInt(tokens[1]),tokens[0]);
+		}
+		br.close();
 	}
 
 }
